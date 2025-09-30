@@ -19,7 +19,7 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
 }));
 // Explicitly allow Vite dev origins and credentials
-const ORIGINS_RAW = process.env.FRONTEND_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173';
+const ORIGINS_RAW = process.env.FRONTEND_ORIGIN || 'https://live-polling-system-89i7.onrender.com';
 const ALLOWED_ORIGINS = ORIGINS_RAW.split(',').map(s => s.trim());
 app.use(cors({
   origin: (origin, callback) => {
