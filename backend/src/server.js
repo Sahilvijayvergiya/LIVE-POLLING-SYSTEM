@@ -14,36 +14,42 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 4003;
 
 const app = express();
 
-// Helmet for security, but relax some policies for dev + CORS
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
-  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
-}));
+// Helmet for security, relaxed for WebSocket + CORS
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+  })
+);
 
-// Allowed origins (local + vercel)
-const ORIGINS_RAW = process.env.FRONTEND_ORIGIN ||
-  'http://localhost:5173,http://127.0.0.1:5173,https://live-polling-system-7omi-git-main-sahil-vijays-projects.vercel.app';
+// Allowed origins (from .env)
+const ORIGINS_RAW =
+  process.env.FRONTEND_ORIGIN ||
+  'http://localhost:5173,http://127.0.0.1:5173';
 
-const ALLOWED_ORIGINS = ORIGINS_RAW.split(',').map(s => s.trim());
+const ALLOWED_ORIGINS = ORIGINS_RAW.split(',').map((s) => s.trim());
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow non-browser or same-origin
-    if (ALLOWED_ORIGINS.includes(origin)) {
-      return callback(null, true);
-    }
-    console.warn(`❌ CORS blocked request from: ${origin}`);
-    return callback(new Error('Not allowed by CORS: ' + origin));
-  },
-  credentials: true,
-}));
+// Enable CORS
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // allow non-browser or same-origin
+      if (ALLOWED_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn(`❌ CORS blocked request from: ${origin}`);
+      return callback(new Error('Not allowed by CORS: ' + origin));
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
-// In-memory store (replace with persistent later if needed)
+// In-memory store
 const store = createStore();
 
-// Health and root
+// Health check routes
 app.get('/', (_req, res) => {
   res.type('text/plain').send('Server is running...');
 });
@@ -64,7 +70,9 @@ async function start() {
     const dbName = process.env.MONGODB_DB || process.env.MONGODB_DATABASE;
 
     if (username && password && hosts && dbName) {
-      uri = `mongodb+srv://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${hosts}/${dbName}?retryWrites=true&w=majority`;
+      uri = `mongodb+srv://${encodeURIComponent(
+        username
+      )}:${encodeURIComponent(password)}@${hosts}/${dbName}?retryWrites=true&w=majority`;
       console.log('✅ Composed MONGODB_URI from separate env vars');
     }
   }
@@ -74,7 +82,10 @@ async function start() {
       await mongoose.connect(uri);
       console.log('✅ MongoDB connected');
     } catch (err) {
-      console.warn('⚠️ MongoDB connection failed, running in in-memory mode:', err?.message);
+      console.warn(
+        '⚠️ MongoDB connection failed, running in in-memory mode:',
+        err?.message
+      );
     }
   } else {
     console.warn('⚠️ No MongoDB URI provided. Running in in-memory mode.');
