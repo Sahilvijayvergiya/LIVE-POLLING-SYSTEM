@@ -22,10 +22,10 @@ app.use(
   })
 );
 
-// Allowed origins (from .env)
+// 👇 Add your Vercel frontend to allowed origins
 const ORIGINS_RAW =
   process.env.FRONTEND_ORIGIN ||
-  'http://localhost:5173,http://127.0.0.1:5173';
+  'http://localhost:5173,http://127.0.0.1:5173,https://live-polling-system-7omi-git-main-sahil-vijays-projects.vercel.app';
 
 const ALLOWED_ORIGINS = ORIGINS_RAW.split(',').map((s) => s.trim());
 
