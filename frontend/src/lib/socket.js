@@ -12,7 +12,7 @@ function resolveBackendUrl() {
   return `${protocol}//${hostname}`
 }
 
-export const socket = io(resolveBackendUrl(), {
+export const socket = io("https://live-polling-system-89i7.onrender.com", {
   autoConnect: true,
   withCredentials: true,
   // Allow both websocket and polling to maximize compatibility
