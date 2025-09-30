@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5173",
+    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 5173"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.5",
@@ -22,7 +22,8 @@
     "eslint": "^9.11.1",
     "eslint-plugin-react": "^7.36.1",
     "vite": "^5.4.1"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
-
-
