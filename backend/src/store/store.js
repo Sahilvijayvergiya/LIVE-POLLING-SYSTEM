@@ -95,6 +95,38 @@ export function createStore() {
 
   const listPolls = () => Object.values(state.polls).sort((a,b) => b.createdAt - a.createdAt);
 
+  const getPoll = (id) => state.polls[id] || null;
+
+  const updatePoll = (id, changes) => {
+    const existing = state.polls[id];
+    if (!existing) return null;
+    if (state.activePollId === id) {
+      throw new Error('Cannot update an active poll');
+    }
+    // allow updating question/options only; if options length changes, recompute results length but keep counts where possible
+    if (Array.isArray(changes.options)) {
+      const newOptions = changes.options;
+      const newResults = newOptions.map((_, idx) => existing.results[idx] || 0);
+      existing.options = newOptions;
+      existing.results = newResults;
+    }
+    if (typeof changes.question === 'string') existing.question = changes.question;
+    if (Number.isFinite(changes.timeLimitSec)) existing.timeLimitSec = changes.timeLimitSec;
+    return existing;
+  };
+
+  const deletePoll = (id) => {
+    if (state.activePollId === id) {
+      throw new Error('Cannot delete an active poll');
+    }
+    const exists = !!state.polls[id];
+    if (exists) {
+      delete state.polls[id];
+      return true;
+    }
+    return false;
+  };
+
   return {
     getSnapshot,
     getActivePoll,
@@ -105,6 +137,9 @@ export function createStore() {
     removeStudent,
     getStudents,
     listPolls,
+    getPoll,
+    updatePoll,
+    deletePoll,
   };
 }
 

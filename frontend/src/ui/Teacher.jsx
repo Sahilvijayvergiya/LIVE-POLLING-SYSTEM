@@ -4,7 +4,7 @@ import { setActivePoll } from '../store/slices/pollSlice.js'
 import { socket } from '../lib/socket.js'
 import { PastPolls } from './PastPolls.jsx'
 
-export function Teacher() {
+export function Teacher({ onViewResults }) {
   const dispatch = useDispatch()
   const activePoll = useSelector(s => s.poll.activePoll)
   const results = useSelector(s => s.poll.results)
@@ -14,6 +14,10 @@ export function Teacher() {
   const [students, setStudents] = useState({})
 
   const canCreate = useMemo(() => !activePoll || !!activePoll.closedAt, [activePoll])
+  const canSubmit = useMemo(() => {
+    const validOptions = options.filter(Boolean).length >= 2
+    return canCreate && !!question && validOptions
+  }, [canCreate, question, options])
 
   useEffect(() => {
     fetch('/api/polls/students').then(r => r.json()).then(d => setStudents(d.students || {}))
@@ -82,7 +86,7 @@ export function Teacher() {
           </div>
           
           <div style={{display:'flex', justifyContent:'flex-end'}}>
-            <button className="btn" onClick={createPoll} disabled={!canCreate} style={{fontSize:'18px', padding:'16px 32px'}}>Ask Question</button>
+            <button className="btn" onClick={createPoll} disabled={!canSubmit} style={{fontSize:'18px', padding:'16px 32px'}}>Ask Question</button>
           </div>
         </div>
       </section>

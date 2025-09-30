@@ -23,18 +23,26 @@ export function registerSocketHandlers(io, store) {
     socket.on('client:hello', ({ name, role }) => {
       if (role === 'student') {
         store.addStudent(socket.id, name || 'Anonymous');
-        socket.emit('client:ack', { ok: true, socketId: socket.id });
-        broadcastState();
-        io.to(ROOM).emit('server:students', store.getStudents());
-      } else {
-        socket.emit('client:ack', { ok: true, socketId: socket.id });
       }
+      socket.emit('client:ack', { ok: true, socketId: socket.id });
+      // Always broadcast latest state and participants after any hello
+      broadcastState();
+      io.to(ROOM).emit('server:students', store.getStudents());
     });
 
     socket.on('teacher:create_poll', ({ question, options, timeLimitSec }) => {
       try {
         const poll = store.createPoll({ question, options, timeLimitSec });
         io.to(ROOM).emit('server:new_poll', poll);
+        // persist immediately so it appears in MongoDB Atlas
+        (async () => {
+          try {
+            const { PollModel } = await import('../web/poll.model.js')
+            await PollModel.updateOne({ id: poll.id }, poll, { upsert: true })
+          } catch {}
+        })();
+        // Ensure all clients also refresh their state snapshot
+        broadcastState();
 
         if (poll.timeLimitSec && poll.timeLimitSec > 0) {
           setTimeout(() => {
@@ -52,9 +60,13 @@ export function registerSocketHandlers(io, store) {
       }
     });
 
-    socket.on('teacher:close_poll', () => {
+    socket.on('teacher:close_poll', async () => {
       const closed = store.closeActivePoll();
       if (closed) {
+        try {
+          const { PollModel } = await import('../web/poll.model.js')
+          await PollModel.updateOne({ id: closed.id }, closed, { upsert: true })
+        } catch {}
         io.to(ROOM).emit('server:poll_closed', closed);
         broadcastState();
       }
@@ -71,6 +83,21 @@ export function registerSocketHandlers(io, store) {
       try {
         const result = store.submitAnswer({ socketId: socket.id, name, optionIndex });
         io.to(ROOM).emit('server:results_update', result);
+        // persist results incrementally for visibility in MongoDB
+        (async () => {
+          try {
+            const active = store.getActivePoll();
+            if (active) {
+              const { PollModel } = await import('../web/poll.model.js')
+              await PollModel.updateOne({ id: active.id }, {
+                $set: {
+                  results: active.results,
+                  answers: active.answers,
+                }
+              }, { upsert: true })
+            }
+          } catch {}
+        })();
       } catch (e) {
         socket.emit('server:error', { error: e.message });
       }

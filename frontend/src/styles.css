@@ -1,9 +1,22 @@
 :root{
   --bg:#ffffff; --panel:#1e1e1e; --muted:#6e6e6e; --text:#373737; --primary:#7765da; --accent:#5767d0; --danger:#ef4444; --border:#e5e7eb; --light:#f2f2f2;
 }
+[data-theme="dark"]{
+  --bg:#0b0b0f; --panel:#11111a; --muted:#a0a0a7; --text:#e5e7eb; --primary:#8b7cf0; --accent:#6b7bff; --danger:#ef4444; --border:#27272a; --light:#d6d6d6;
+}
 *{box-sizing:border-box}
 html,body,#root{height:100%}
 body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);color:var(--text)}
+
+.topbar{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);height:56px}
+.topbar-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar-spacer{height:0}
+
+/* offset page content to avoid overlap with fixed topbar */
+body{padding-top:56px}
+
+/* ensure page headers don’t visually merge with the fixed topbar */
+.header{margin-top:8px}
 
 .container{max-width:1200px;margin:0 auto;padding:24px}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
@@ -72,5 +85,12 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);co
   .chat-panel{width:300px;right:10px}
   .chat-toggle{right:10px;bottom:10px;width:50px;height:50px}
 }
+
+/* Toasts */
+.toast-container{position:fixed;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:1000}
+.toast{padding:10px 14px;border-radius:8px;background:#2a2a2a;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.25);font-size:14px;max-width:320px}
+.toast.error{background:#c0392b}
+.toast.warn{background:#d35400}
+.toast.info{background:#34495e}
 
 

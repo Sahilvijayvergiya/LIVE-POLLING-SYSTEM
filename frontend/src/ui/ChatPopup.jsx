@@ -42,11 +42,17 @@ export function ChatPopup() {
           {activeTab === 'chat' ? (
             <>
               <div className="chat-scroll">
-                {messages.map(m => (
-                  <div key={m.id} className="chat-item">
-                    <b>{m.from}:</b> {m.text}
-                  </div>
-                ))}
+                {messages.map(m => {
+                  const mine = m.from === name
+                  return (
+                    <div key={m.id} style={{display:'flex', justifyContent: mine ? 'flex-end' : 'flex-start'}}>
+                      <div className="chat-item" style={{background: mine ? 'var(--primary)' : 'rgba(255,255,255,0.05)', color: mine ? '#fff' : 'var(--light)'}}>
+                        {!mine && <div style={{fontWeight:700, marginBottom:4}}>{m.from}</div>}
+                        <div>{m.text}</div>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
               <div className="chat-input">
                 <input value={text} onChange={e=>setText(e.target.value)} placeholder="Type message" />

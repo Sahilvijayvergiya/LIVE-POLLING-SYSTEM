@@ -46,3 +46,4 @@ Frontend:
 - Teacher: create polls with optional time limit, live results, close poll, remove students, view past polls
 - Student: join with name, answer within 60s, see live results after submitting or closing
 - Realtime via Socket.io, plus a small chat popup
+
