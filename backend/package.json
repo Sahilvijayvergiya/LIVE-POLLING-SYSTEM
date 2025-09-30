@@ -5,9 +5,9 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "dev": "node src/server.js",
-    "start": "cross-env NODE_ENV=production node src/server.js"
-  },
+  "dev": "node src/server.js",
+  "start": "node backend/src/server.js"
+},
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
