@@ -1,6 +1,6 @@
 # Live Polling System (Teacher/Student)
 
-Figma reference: [`Intervue-Assigment--Poll-system--Copy`](https://www.figma.com/design/uhinheFgWssbxvlI7wtf59/Intervue-Assigment--Poll-system?node-id=0-1&t=Y5GfjIgQte8VUTgA-1)
+Figma reference: [`Intervue-Assigment--Poll-system`](https://www.figma.com/design/uhinheFgWssbxvlI7wtf59/Intervue-Assigment--Poll-system?node-id=0-1&t=Y5GfjIgQte8VUTgA-1)
 
 ## Stack
 - Frontend: React + Vite + Redux Toolkit + Socket.io client
